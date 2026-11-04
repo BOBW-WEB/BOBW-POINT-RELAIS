@@ -2,6 +2,7 @@ import "@shopify/shopify-app-react-router/adapters/node";
 import {
   ApiVersion,
   AppDistribution,
+  DeliveryMethod,
   shopifyApp,
 } from "@shopify/shopify-app-react-router/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
@@ -16,6 +17,28 @@ const shopify = shopifyApp({
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.SingleMerchant,
+  // Enregistrement explicite (plutot que de compter sur la souscription
+  // "managed" declaree dans shopify.app.toml, qui ne s'est jamais declenchee
+  // de facon fiable en pratique malgre une configuration confirmee correcte).
+  webhooks: {
+    ORDERS_CREATE: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: "/webhooks/orders/create",
+    },
+    APP_UNINSTALLED: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: "/webhooks/app/uninstalled",
+    },
+    APP_SCOPES_UPDATE: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: "/webhooks/app/scopes_update",
+    },
+  },
+  hooks: {
+    afterAuth: async ({ session }) => {
+      await shopify.registerWebhooks({ session });
+    },
+  },
   future: {
     expiringOfflineAccessTokens: false,
   },
