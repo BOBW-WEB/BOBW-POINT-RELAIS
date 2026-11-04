@@ -27,5 +27,14 @@ api_version = "2026-07"
 [auth]
 redirect_urls = [ "https://web-production-9de13.up.railway.app/api/auth" ]
 
+[network_access]
+# Serveurs contactes en fetch() par l'extension checkout (Checkout.jsx) :
+# notre propre backend (recherche de points relais, enregistrement) et
+# l'API publique d'adresse du gouvernement francais (autocompletion).
+allowed_sources = [
+  "https://web-production-9de13.up.railway.app",
+  "https://api-adresse.data.gouv.fr",
+]
+
 [build]
 automatically_update_urls_on_dev = true
