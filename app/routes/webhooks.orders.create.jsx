@@ -83,6 +83,7 @@ export const action = async ({ request }) => {
         countryCode: address.country_code,
         weight: 1000,
         requestId: `webhook-${payload.id}`,
+        shop,
       });
 
       if (result.error || !result.points?.length) {

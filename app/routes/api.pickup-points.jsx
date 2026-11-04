@@ -34,7 +34,13 @@ export async function loader() {
 }
 
 export async function action({ request }) {
-  const { cors } = await authenticate.public.checkout(request);
+  const { sessionToken, cors } = await authenticate.public.checkout(request);
+  // Meme derivation que api.save-pickup-point.jsx : sessionToken.dest est
+  // signe par Shopify, utilise uniquement pour l'observabilite ici (aucune
+  // ecriture n'est faite sur cette route).
+  const shop = sessionToken.dest.includes("://")
+    ? new URL(sessionToken.dest).hostname
+    : sessionToken.dest;
 
   if (request.method !== "POST") {
     return cors(
@@ -58,6 +64,7 @@ export async function action({ request }) {
     countryCode,
     weight,
     requestId: `checkout-${Date.now()}`,
+    shop,
   });
 
   if (result.error) {

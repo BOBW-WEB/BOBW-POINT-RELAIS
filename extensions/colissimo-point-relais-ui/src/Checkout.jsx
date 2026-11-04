@@ -2,9 +2,8 @@ import '@shopify/ui-extensions/preact';
 import {render} from "preact";
 import {useState, useEffect, useRef} from "preact/hooks";
 
-// URL publique de notre backend (voir shopify.server.js / .env SHOPIFY_APP_URL)
-// A remplacer par l'URL de tunnel/prod une fois deployee.
-const APP_BACKEND_URL = "https://emails-dates-arguments-donate.trycloudflare.com";
+// URL publique de notre backend (voir shopify.server.js / .env SHOPIFY_APP_URL).
+const APP_BACKEND_URL = "https://web-production-9de13.up.railway.app";
 
 // API publique du gouvernement francais, gratuite et sans cle, deja utilisee
 // cote client dans la maquette de reference.
@@ -402,7 +401,7 @@ function Extension() {
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {
-            setError(data.error);
+            setError(data.errorMessage || data.error);
             setStatus("error");
             return;
           }

@@ -33,11 +33,15 @@ export async function findColissimoPoints({
   countryCode,
   weight,
   requestId,
+  shop,
 }) {
   const accountNumber = process.env.COLISSIMO_ACCOUNT_NUMBER;
   const password = process.env.COLISSIMO_PASSWORD;
 
   if (!accountNumber || !password) {
+    console.error("[colissimo] identifiants manquants (COLISSIMO_ACCOUNT_NUMBER/PASSWORD)", {
+      shop,
+    });
     return { error: "colissimo_credentials_missing" };
   }
 
@@ -68,6 +72,7 @@ export async function findColissimoPoints({
     colissimoResponse = await res.json();
   } catch (err) {
     console.error("[colissimo] findRDVPointRetraitAcheminement unreachable", {
+      shop,
       zipCode,
       city,
       message: err?.message,
@@ -77,6 +82,7 @@ export async function findColissimoPoints({
 
   if (colissimoResponse.errorCode !== 0) {
     console.error("[colissimo] findRDVPointRetraitAcheminement error", {
+      shop,
       zipCode,
       city,
       errorCode: colissimoResponse.errorCode,
