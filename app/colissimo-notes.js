@@ -31,6 +31,21 @@ export function buildOrderGid(orderId) {
   return `gid://shopify/Order/${numericOrderId}`;
 }
 
+// Deduit le mode de livraison a partir du titre du tarif d'expedition
+// (ex. "Colissimo Point Relais", "Colissimo Domicile - Sans signature").
+// Meme logique que cote extension (Checkout.jsx) : on se fie au titre, seul
+// signal expose par l'API Checkout, et on le fige au nom pres sur les ~300
+// boutiques (voir plan de rollout).
+export function classifyDeliveryTitle(title) {
+  const upper = (title || "").toUpperCase();
+  const isPickupPoint = upper.includes("POINT RELAIS");
+  const isHome = !isPickupPoint && upper.includes("DOMICILE");
+  const homeLabel = upper.includes("AVEC SIGNATURE")
+    ? "DOMICILE avec signature"
+    : "DOMICILE sans signature";
+  return { isPickupPoint, isHome, homeLabel };
+}
+
 const COLISSIMO_NOTE_PATTERN = /^\[[^\]]+\]FR - /;
 
 // N'écrase jamais une note déjà présente sur la commande à moins qu'elle ne

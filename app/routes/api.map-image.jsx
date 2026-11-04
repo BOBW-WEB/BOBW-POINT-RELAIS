@@ -2,8 +2,10 @@
 // ne peuvent charger des images que depuis le domaine de l'app elle-meme,
 // pas depuis un domaine tiers (Mapbox) directement.
 
+// Style clair/epure plutot que le style "streets" par defaut, plus proche
+// de l'esthetique recherchee pour le widget point relais.
 const MAPBOX_STATIC_BASE =
-  "https://api.mapbox.com/styles/v1/mapbox/streets-v12/static";
+  "https://api.mapbox.com/styles/v1/mapbox/light-v11/static";
 
 export async function loader({ request }) {
   const url = new URL(request.url);

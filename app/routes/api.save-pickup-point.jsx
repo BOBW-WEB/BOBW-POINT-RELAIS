@@ -6,7 +6,6 @@
 // l'extension (vulnérabilité : n'importe quelle boutique du parc pouvait réécrire
 // la note de commande d'une autre boutique en forgeant ce champ).
 
-import prisma from "../db.server";
 import { authenticate } from "../shopify.server";
 import {
   formatPointRetraitNote,
@@ -14,55 +13,11 @@ import {
   buildOrderGid,
   mergeNote,
 } from "../colissimo-notes";
-
-async function getOrderNote({ shop, accessToken, orderGid }) {
-  const res = await fetch(`https://${shop}/admin/api/2026-07/graphql.json`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Access-Token": accessToken,
-    },
-    body: JSON.stringify({
-      query: `query($id: ID!) { order(id: $id) { note } }`,
-      variables: { id: orderGid },
-    }),
-  });
-  const json = await res.json();
-  return json.data?.order?.note || "";
-}
-
-async function getOfflineAccessToken(shop) {
-  const session = await prisma.session.findFirst({
-    where: { shop, isOnline: false },
-    orderBy: { id: "desc" },
-  });
-  return session?.accessToken;
-}
-
-async function updateOrderNote({ shop, accessToken, orderGid, note }) {
-  const query = `
-    mutation orderUpdate($input: OrderInput!) {
-      orderUpdate(input: $input) {
-        order { id note }
-        userErrors { field message }
-      }
-    }
-  `;
-
-  const res = await fetch(`https://${shop}/admin/api/2026-07/graphql.json`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Access-Token": accessToken,
-    },
-    body: JSON.stringify({
-      query,
-      variables: { input: { id: orderGid, note } },
-    }),
-  });
-
-  return res.json();
-}
+import {
+  getOfflineAccessToken,
+  getOrderNote,
+  updateOrderNote,
+} from "../order-note.server";
 
 export async function loader() {
   return new Response(null, { status: 204 });

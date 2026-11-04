@@ -5,6 +5,7 @@ import {
   formatDomicileNote,
   buildOrderGid,
   mergeNote,
+  classifyDeliveryTitle,
 } from "./colissimo-notes.js";
 
 test("formatPointRetraitNote formats a pickup point note", () => {
@@ -96,4 +97,28 @@ test("mergeNote preserves an unrelated existing note instead of overwriting it",
     mergeNote("Appeler avant livraison", "[A2P-1]FR - POINT RETRAIT : ..."),
     "Appeler avant livraison\n[A2P-1]FR - POINT RETRAIT : ...",
   );
+});
+
+test("classifyDeliveryTitle detects a Point Relais rate", () => {
+  const result = classifyDeliveryTitle("Colissimo Point Relais");
+  assert.equal(result.isPickupPoint, true);
+  assert.equal(result.isHome, false);
+});
+
+test("classifyDeliveryTitle detects a Domicile rate without signature by default", () => {
+  const result = classifyDeliveryTitle("Colissimo Domicile - Sans signature");
+  assert.equal(result.isPickupPoint, false);
+  assert.equal(result.isHome, true);
+  assert.equal(result.homeLabel, "DOMICILE sans signature");
+});
+
+test("classifyDeliveryTitle detects a Domicile rate with signature", () => {
+  const result = classifyDeliveryTitle("Colissimo Domicile - Avec signature");
+  assert.equal(result.homeLabel, "DOMICILE avec signature");
+});
+
+test("classifyDeliveryTitle treats any other rate as neither pickup nor home", () => {
+  const result = classifyDeliveryTitle("Mondial Relay Standard");
+  assert.equal(result.isPickupPoint, false);
+  assert.equal(result.isHome, false);
 });
