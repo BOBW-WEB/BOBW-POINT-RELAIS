@@ -19,8 +19,13 @@ import {
   updateOrderNote,
 } from "../order-note.server";
 
-export async function loader() {
-  return new Response(null, { status: 204 });
+export async function loader({ request }) {
+  // Le preflight CORS (OPTIONS) arrive ici, pas dans action() : il faut
+  // passer par authenticateCheckout pour que la reponse porte les headers
+  // CORS requis (voir checkout-auth.server.js), sinon le navigateur bloque
+  // la vraie requete qui suit.
+  const { cors } = await authenticateCheckout(request);
+  return cors(new Response(null, { status: 204 }));
 }
 
 export async function action({ request }) {
