@@ -242,14 +242,12 @@ function Extension() {
     (option) => option.handle === selectedOptionHandle,
   );
   const deliveryTitle = selectedDeliveryOption?.title?.toUpperCase() ?? "";
+  // Noms de tarifs garantis par le script interne qui provisionne les zones
+  // de livraison sur les ~300 boutiques : "Colissimo Point Relais" et
+  // "Colissimo Domicile – Sans signature" (pas de variante "avec signature").
   const isPickupPoint = deliveryTitle.includes("POINT RELAIS");
-  // A CONFIRMER PAR TESTS : noms de tarifs vus sur un site actif :
-  // "Colissimo Point Relais" et "Colissimo Domicile – Sans signature".
-  // Le libellé "avec signature" est une hypothèse (jamais vu en vrai).
   const isHome = !isPickupPoint && deliveryTitle.includes("DOMICILE");
-  const homeLabel = deliveryTitle.includes("AVEC SIGNATURE")
-    ? "DOMICILE avec signature"
-    : "DOMICILE sans signature";
+  const homeLabel = "DOMICILE sans signature";
 
   // L'adresse de livraison de la commande sert de point de depart par
   // defaut ; une recherche manuelle (searchAddress) ne fait que changer

@@ -112,11 +112,6 @@ test("classifyDeliveryTitle detects a Domicile rate without signature by default
   assert.equal(result.homeLabel, "DOMICILE sans signature");
 });
 
-test("classifyDeliveryTitle detects a Domicile rate with signature", () => {
-  const result = classifyDeliveryTitle("Colissimo Domicile - Avec signature");
-  assert.equal(result.homeLabel, "DOMICILE avec signature");
-});
-
 test("classifyDeliveryTitle treats any other rate as neither pickup nor home", () => {
   const result = classifyDeliveryTitle("Mondial Relay Standard");
   assert.equal(result.isPickupPoint, false);

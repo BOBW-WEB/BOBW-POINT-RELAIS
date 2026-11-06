@@ -7,9 +7,10 @@ export function formatPointRetraitNote(point) {
 }
 
 export function formatDomicileNote(address) {
-  // A CONFIRMER PAR TESTS : structure observée sur une boutique de TEST de l'app
-  // actuelle : [DOM]FR - DOMICILE sans signature : NOM ADRESSE CP VILLE FR TELEPHONE
-  // (majuscules). Le libellé "avec signature" est une hypothèse, jamais vu en vrai.
+  // Structure : [DOM]FR - DOMICILE sans signature : NOM ADRESSE CP VILLE FR TELEPHONE
+  // (majuscules). Seul ce libellé existe : le script interne qui provisionne
+  // les tarifs de livraison sur les ~300 boutiques ne crée jamais de variante
+  // "avec signature".
   const label = address.label || "DOMICILE sans signature";
   const parts = [
     address.name,
@@ -40,10 +41,7 @@ export function classifyDeliveryTitle(title) {
   const upper = (title || "").toUpperCase();
   const isPickupPoint = upper.includes("POINT RELAIS");
   const isHome = !isPickupPoint && upper.includes("DOMICILE");
-  const homeLabel = upper.includes("AVEC SIGNATURE")
-    ? "DOMICILE avec signature"
-    : "DOMICILE sans signature";
-  return { isPickupPoint, isHome, homeLabel };
+  return { isPickupPoint, isHome, homeLabel: "DOMICILE sans signature" };
 }
 
 const COLISSIMO_NOTE_PATTERN = /^\[[^\]]+\]FR - /;
