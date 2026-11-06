@@ -6,7 +6,7 @@
 // l'extension (vulnérabilité : n'importe quelle boutique du parc pouvait réécrire
 // la note de commande d'une autre boutique en forgeant ce champ).
 
-import { authenticate } from "../shopify.server";
+import { authenticateCheckout } from "../checkout-auth.server";
 import {
   formatPointRetraitNote,
   formatDomicileNote,
@@ -24,7 +24,7 @@ export async function loader() {
 }
 
 export async function action({ request }) {
-  const { sessionToken, cors } = await authenticate.public.checkout(request);
+  const { sessionToken, cors } = await authenticateCheckout(request);
   // sessionToken.dest est signé par Shopify et ne peut pas être falsifié par
   // le client, contrairement à un champ "shop" envoyé dans le corps de la
   // requête : c'est la seule source de vérité pour savoir quelle boutique

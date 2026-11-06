@@ -29,6 +29,18 @@ const DAY_LABELS = [
 ];
 const DAY_LABELS_SHORT = ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."];
 
+// Codes d'erreur generiques (pas Colissimo, voir COLISSIMO_ERROR_MESSAGES
+// cote serveur) que l'extension elle-meme peut rencontrer.
+const GENERIC_ERROR_MESSAGES = {
+  invalid_session_token:
+    "Votre session a expiré, veuillez réessayer dans un instant.",
+  network: "Impossible de contacter le service, vérifiez votre connexion.",
+};
+
+function friendlyErrorMessage(code) {
+  return GENERIC_ERROR_MESSAGES[code] || code;
+}
+
 function formatDistance(meters) {
   if (meters == null) return "";
   return meters >= 1000 ? `${(meters / 1000).toFixed(2)} km` : `${meters} m`;
@@ -399,7 +411,7 @@ function Extension() {
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {
-            setError(data.errorMessage || data.error);
+            setError(data.errorMessage || friendlyErrorMessage(data.error));
             setStatus("error");
             return;
           }
@@ -412,7 +424,7 @@ function Extension() {
           setSelectedId(data.points?.[0]?.id ?? null);
         })
         .catch(() => {
-          setError("network");
+          setError(friendlyErrorMessage("network"));
           setStatus("error");
         });
     })();
@@ -445,13 +457,17 @@ function Extension() {
       });
       const data = await res.json();
       if (!res.ok || data.error) {
-        setError(`save_failed: ${res.status} ${JSON.stringify(data)}`);
+        setError(
+          data.error
+            ? friendlyErrorMessage(data.error)
+            : `save_failed: ${res.status} ${JSON.stringify(data)}`,
+        );
         setStatus("error");
         return;
       }
       setStatus("saved");
-    } catch (err) {
-      setError(`save_network: ${err instanceof Error ? err.message : err}`);
+    } catch {
+      setError(friendlyErrorMessage("network"));
       setStatus("error");
     }
   }

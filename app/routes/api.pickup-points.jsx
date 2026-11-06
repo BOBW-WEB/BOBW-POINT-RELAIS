@@ -4,7 +4,7 @@
 // vérifie que la requête provient bien d'une extension checkout active sur une boutique
 // où l'app est installée (voir app/shopify.server.js) avant de traiter quoi que ce soit.
 
-import { authenticate } from "../shopify.server";
+import { authenticateCheckout } from "../checkout-auth.server";
 import { findColissimoPoints } from "../colissimo-client.server";
 
 function buildMapImageUrl(points, requestOrigin, origin) {
@@ -34,7 +34,7 @@ export async function loader() {
 }
 
 export async function action({ request }) {
-  const { sessionToken, cors } = await authenticate.public.checkout(request);
+  const { sessionToken, cors } = await authenticateCheckout(request);
   // Meme derivation que api.save-pickup-point.jsx : sessionToken.dest est
   // signe par Shopify, utilise uniquement pour l'observabilite ici (aucune
   // ecriture n'est faite sur cette route).
