@@ -24,6 +24,22 @@ api_version = "2026-07"
   uri = "/webhooks/orders/create"
   topics = [ "orders/create" ]
 
+  # Webhooks GDPR obligatoires (compliance_topics, mecanisme distinct des
+  # souscriptions normales ci-dessus : voir app/routes/webhooks.customers.*
+  # et webhooks.shop.redact.jsx). On ne stocke aucune donnee personnelle,
+  # ces routes accusent simplement reception.
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/data_request"
+  compliance_topics = [ "customers/data_request" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/redact"
+  compliance_topics = [ "customers/redact" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/shop/redact"
+  compliance_topics = [ "shop/redact" ]
+
 [auth]
 redirect_urls = [ "https://web-production-9de13.up.railway.app/api/auth" ]
 
